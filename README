@@ -1,0 +1,8 @@
+Color Image Generator
+
+This is a very simple ImageMagick-based script that generates an
+image of specified size, filled with the specified color (by hex
+code).
+
+Image is displayed next to the form which defined the attributes.
+It is also possible to download the image by clicking on it.
