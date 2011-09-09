@@ -186,8 +186,8 @@ class SampleImage {
 				$this->colors[0]
 			);
 			$counter = 0;
-			$marginX = $this->width / 50;
-			$marginY = $this->height / 50;
+			$marginX = $this->width / 20;
+			$marginY = $this->height / 20;
 			$positionX = $marginX;
 
 			foreach ($this->colors as $color) {
@@ -197,8 +197,8 @@ class SampleImage {
 				}
 
 				// Progressively smaller size for each box
-				$width = (int) ($this->width / 2 / $counter);
-				$height = (int) ($this->height / 2 / $counter);
+				$width = (int) ($this->width / 3 / $counter);
+				$height = (int) ($this->height / 3 / $counter);
 
 				$command .= ' -draw "';
 				$command .= 'stroke ' . $color;
