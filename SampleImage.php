@@ -159,7 +159,6 @@ class SampleImage {
 		}
 		$name .= '.png';
 		$this->fileName = $this->tempDir . $name;
-		print_r($this->fileName);
 	}
 
 	/**
