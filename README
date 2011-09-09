@@ -6,3 +6,7 @@ code).
 
 Image is displayed next to the form which defined the attributes.
 It is also possible to download the image by clicking on it.
+
+In case when multiple colors are specified, the generated image will
+be filled with the first color and have a progressively smaller box
+for each of the additional colors.
