@@ -101,7 +101,7 @@ $downloadQuery = '?' . http_build_query($downloadParams);
 				<input type="text" id="color3" name="colors[2]" value="<?php echo $colors[2]; ?>" />
 				<br />
 				<label for="color4">Fourth Color (hex)</label>
-				<input type="text" id="color4" name="color[3]" value="<?php echo $colors[3]; ?>" />
+				<input type="text" id="color4" name="colors[3]" value="<?php echo $colors[3]; ?>" />
 				<br />
 
 				<label for="width">Image Width (px)</label>
