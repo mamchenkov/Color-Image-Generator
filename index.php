@@ -80,7 +80,7 @@ $downloadQuery = '?' . http_build_query($downloadParams);
 			fieldset { width: 50%; border: 1px solid #000; }
 			legend { border: 1px solid #000; padding: 5px; font-size: 120%; }
 			form { display: inline; float: left; margin-right: 20px; border-right: 1px dotted #000; padding: 20px; }
-			label { display: block;  font-size: 80%; }
+			label { display: block;  font-size: 80%; font-weight: bold; }
 			input[type=text] { margin-bottom: 10px; }
 			img { border: 1px solid #000; }
 			address { font-color: #cccccc; font-size: 80%; margin-top: 10px; }
