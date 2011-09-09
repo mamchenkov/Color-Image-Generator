@@ -2,7 +2,7 @@
 /**
  * Color Image Generator
  *
- * Generate an image of specified size, filled with specified color.
+ * Generate an image of specified size, filled with specified color(s).
  * Provide support for display and download of the image.
  *
  * @author Leonid Mamchenkov <leonid@mamchenkov.net>
@@ -10,13 +10,13 @@
 class SampleImage {
 
 	const DEFAULT_COLOR = '#0000ff';
-	const DEFAULT_WIDTH = 100;
-	const DEFAULT_HEIGHT = 50;
+	const DEFAULT_WIDTH = 200;
+	const DEFAULT_HEIGHT = 200;
 
 	const MAX_WIDTH = 1000;
 	const MAX_HEIGHT = 1000;
 
-	protected $color;
+	protected $colors;
 	protected $width;
 	protected $height;
 	protected $fileName;
@@ -29,11 +29,11 @@ class SampleImage {
 	 * - Make sure we have all we need
 	 * - Set the values to work with
 	 *
-	 * @param string $color Color hex code
+	 * @param array $colors List of color hex codes
 	 * @param integer $width Width in pixels
 	 * @param integer $height Height in pixels
 	 */
-	public function __construct($color, $width, $height) {
+	public function __construct($colors, $width, $height) {
 
 		// No reason to continue at all, if ImageMagick is not around
 		if (!file_exists($this->convert)) {
@@ -45,7 +45,7 @@ class SampleImage {
 			throw new Exception("Temporary directory is missing or is not writable! Checking: " . $this->tempDir);
 		}
 
-		$this->setColor($color);
+		$this->setColors($colors);
 		$this->setWidth($width);
 		$this->setHeight($height);
 	}
@@ -57,32 +57,43 @@ class SampleImage {
 	 *
 	 */
 	public function __destruct() {
-		unlink($this->fileName);
+		if (file_exists($this->fileName)) {
+			unlink($this->fileName);
+		}
 	}
 
 	/**
-	 * Validate, clean, and set the color
+	 * Validate, clean, and set the color(s)
 	 *
 	 * This also updates the filename that we are using for
 	 * both temporary image storage and attachment name when
 	 * downloading
 	 *
-	 * @param string $color Color hex code
+	 * @param array $colors Color hex codes
 	 */
-	public function setColor($color) {
-		$color = urldecode($color);
-		$color = trim($color);
-		$color = strtolower($color);
+	public function setColors($colors) {
+		$validColors = array();
 
-		if (!preg_match('/^#/', $color)) {
-			$color = "#{$color}";
+		foreach ($colors as $color) {
+			$color = urldecode($color);
+			$color = trim($color);
+			$color = strtolower($color);
+
+			if (!preg_match('/^#/', $color)) {
+				$color = "#{$color}";
+			}
+
+			if (preg_match('/^#?(([a-fA-F0-9]){3}){1,2}$/', $color)) {
+				$validColors[] = $color;
+			}
+
 		}
 
-		if (preg_match('/^#?(([a-fA-F0-9]){3}){1,2}$/', $color)) {
-			$this->color = $color;
+		if (!empty($validColors)) {
+			$this->colors = $validColors;
 		}
 		else {
-			$this->color = self::DEFAULT_COLOR;
+			$this->colors = array(self::DEFAULT_COLOR);
 		}
 
 		// Our filename is based on color, so reset it every time color changes
@@ -94,8 +105,8 @@ class SampleImage {
 	 *
 	 * @return string Color hex code
 	 */
-	public function getColor() {
-		return $this->color;
+	public function getColors() {
+		return $this->colors;
 	}
 
 	/**
@@ -142,10 +153,13 @@ class SampleImage {
 	 * Filename is based on chosen color.
 	 */
 	public function setFileName() {
-		$name = 'color_';
-		$name .= strtolower(preg_replace('/^#/', '', $this->color));
+		$name = 'color';
+		foreach ($this->colors as $color) {
+			$name .= '_' . strtolower(preg_replace('/^#/', '', $color));
+		}
 		$name .= '.png';
 		$this->fileName = $this->tempDir . $name;
+		print_r($this->fileName);
 	}
 
 	/**
@@ -158,7 +172,7 @@ class SampleImage {
 			$this->convert, 
 			$this->width, 
 			$this->height, 
-			$this->color, 
+			$this->colors[0], 
 			$this->fileName
 		);
 		exec($command);
