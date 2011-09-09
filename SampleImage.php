@@ -167,13 +167,53 @@ class SampleImage {
 	 * Executes shell command that generates a file on disk.
 	 */
 	private function create() {
-		$command = sprintf("%s -size %dx%d xc:%s %s", 
-			$this->convert, 
-			$this->width, 
-			$this->height, 
-			$this->colors[0], 
-			$this->fileName
-		);
+		// If there is only one color, just create an image
+		if (count($this->colors) == 1) {
+			$command = sprintf("%s -size %dx%d xc:%s %s", 
+				$this->convert, 
+				$this->width, 
+				$this->height, 
+				$this->colors[0], 
+				$this->fileName
+			);
+		}
+		// If there is more than one color, compute sizes and locations of additional color boxes
+		else {
+			$command = sprintf("%s -size %dx%d xc:%s ",
+				$this->convert,
+				$this->width,
+				$this->height,
+				$this->colors[0]
+			);
+			$counter = 0;
+			$marginX = $this->width / 20;
+			$marginY = $this->height / 20;
+			$positionX = $marginX;
+
+			foreach ($this->colors as $color) {
+				if ($counter == 0) {
+					$counter++;
+					continue;
+				}
+
+				// Progressively smaller size for each box
+				$width = (int) ($this->width / 3 / $counter);
+				$height = (int) ($this->height / 3 / $counter);
+
+				$command .= ' -draw "';
+				$command .= 'stroke ' . $color;
+				$command .= ' fill ' . $color;
+				$command .= ' rectangle ';
+				$command .= $positionX . ',' . ($this->height - $height - $marginY);  // starting coordinates
+				$command .= ' ';
+				$command .=	($positionX + $width) . ',' . ($this->height - $marginY);   // ending coordinates
+				$command .=	'"';
+
+				$counter++;
+				$positionX += $marginX + $width;
+			}
+			$command .= ' ' . $this->fileName;
+		}
 		exec($command);
 	}	
 
