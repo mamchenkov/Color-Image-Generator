@@ -197,8 +197,8 @@ class SampleImage {
 				}
 
 				// Progressively smaller size for each box
-				$width = (int) ($this->width / 3 / $counter);
-				$height = (int) ($this->height / 3 / $counter);
+				$width = (int) (($this->width / 3 / $counter) + ($this->width * 0.07));
+				$height = (int) (($this->height / 3 / $counter) + ($this->width * 0.07));
 
 				$command .= ' -draw "';
 				$command .= 'stroke ' . $color;
