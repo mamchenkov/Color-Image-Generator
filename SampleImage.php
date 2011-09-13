@@ -21,7 +21,8 @@ class SampleImage {
 	protected $height;
 	protected $fileName;
 	protected $convert = '/usr/bin/convert';
-	protected $tempDir = '/tmp/';
+	protected $tempDir = '/tmp/colors/';
+	protected $cache = true;
 
 	/**
 	 * Constructor
@@ -40,14 +41,19 @@ class SampleImage {
 			throw new Exception("ImageMagick convert not found! Expecting at: " . $this->convert);
 		}
 
+		// If temporary directory does not exist, attempt to create it
+		if (!file_exists($this->tempDir)) {
+			mkdir($this->tempDir);
+		}
+
 		// Temporary directory is not a directory or is not writable
 		if (!file_exists($this->tempDir) || !is_dir($this->tempDir) || !is_writable($this->tempDir)) {
 			throw new Exception("Temporary directory is missing or is not writable! Checking: " . $this->tempDir);
 		}
 
-		$this->setColors($colors);
 		$this->setWidth($width);
 		$this->setHeight($height);
+		$this->setColors($colors);
 	}
 
 	/**
@@ -57,7 +63,7 @@ class SampleImage {
 	 *
 	 */
 	public function __destruct() {
-		if (file_exists($this->fileName)) {
+		if (file_exists($this->fileName) && (!$this->cache)) {
 			unlink($this->fileName);
 		}
 	}
@@ -153,7 +159,7 @@ class SampleImage {
 	 * Filename is based on chosen color.
 	 */
 	public function setFileName() {
-		$name = 'color';
+		$name = 'color_' . $this->width . 'x' . $this->height;
 		foreach ($this->colors as $color) {
 			$name .= '_' . strtolower(preg_replace('/^#/', '', $color));
 		}
@@ -167,6 +173,12 @@ class SampleImage {
 	 * Executes shell command that generates a file on disk.
 	 */
 	private function create() {
+
+		// Use cached version if we have one
+		if ($this->cache && file_exists($this->fileName)) {
+			return;
+		}
+
 		// If there is only one color, just create an image
 		if (count($this->colors) == 1) {
 			$command = sprintf("%s -size %dx%d xc:%s %s", 
