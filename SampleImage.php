@@ -237,6 +237,11 @@ class SampleImage {
 	public function show() {
 		$this->create();
 		header("Content-Type: image/png");
+		header("Content-Transfer-Encoding: binary");
+		header("Content-Length: " . filesize($this->fileName));
+		header("ETag: " . md5($this->fileName)); // note we calculate md5 from filename, not from the file content
+		header("Cache-Control: max-age=3600");
+		header("Expires: " . gmdate('D, j M Y H:i:s', time() + 3600) . ' GMT');
 		ob_clean();
 		flush();
 		readfile($this->fileName);
